@@ -1,32 +1,69 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class LoginTest {
     private static final String USERNAME = "EugenBorisik";
     private static final String PASSWORD = "qwerty12345";
-    WebDriver driver = new ChromeDriver();
+    private static final String RMSYS_URL = "https://192.168.100.26/";
+    private WebDriver driver = new ChromeDriver();
+
+    public void login(String usernme, String pass) {
+        driver.findElement(By.id("Username")).sendKeys(usernme);
+        driver.findElement(By.cssSelector("input#Password")).sendKeys(pass);
+        driver.findElement(By.cssSelector(".submit-button")).submit();
+    }
+
+    @DataProvider
+    public Object[][] testData() {
+        return new Object[][]{
+                new Object[]{"eugenborisik", "qwerty12345"},
+                new Object[]{"EugenBorisik", "qwerty12345"},
+                new Object[]{"EUGENBORISIK", "qwerty12345"},
+                new Object[]{"TamaraLukashonak", "blahblah"},
+        };
+    }
 
     @BeforeMethod
     public void start() {
-        driver.get("https://192.168.100.26/");
-
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        driver.get(RMSYS_URL);
     }
 
     @Test
-    public void loginTest() {
-        driver.findElement(By.id("Username")).sendKeys(USERNAME);
-        driver.findElement(By.cssSelector("input#Password")).sendKeys(PASSWORD);
-        driver.findElement(By.cssSelector(".submit-button")).submit();
+    public void loginTest() throws InterruptedException {
+        login(USERNAME, PASSWORD);
+        Thread.sleep(500);  //Explicit wait
         Assert.assertEquals("Borisik, Eugen", driver.findElement(By.cssSelector("#info div")).getText());
-
     }
 
-    @AfterMethod
+    @Test(dataProvider = "testData")
+    public void loginWithExplicitWaitAndDdtTest(String username, String password) {
+        login(username, password);
+        WebElement signOut = driver.findElement(By.cssSelector(".sign-out"));
+        new WebDriverWait(driver, 3).until(ExpectedConditions.visibilityOf(signOut));
+        Assert.assertTrue(signOut.isDisplayed(), "SignOut is not displayed!");
+        signOut.click();
+    }
+
+    @Test
+    public void explicitWaitWithOfficeTabTest() {
+        login(USERNAME, PASSWORD);
+        driver.findElement(By.cssSelector("a[href*='Office/Index']")).click();
+        WebElement searchInput = driver.findElement(By.cssSelector("#input-search"));
+        new WebDriverWait(driver, 15).pollingEvery(Duration.ofMillis(2700)).until(ExpectedConditions.visibilityOf(searchInput));
+        Assert.assertTrue(searchInput.isDisplayed(), "Search for Office input is not displayed!");
+    }
+
+    @AfterTest
     public void end() {
         driver.quit();
     }
