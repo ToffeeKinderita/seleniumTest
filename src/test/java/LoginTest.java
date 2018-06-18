@@ -32,7 +32,7 @@ public class LoginTest {
         };
     }
 
-    @BeforeMethod
+    @BeforeClass
     public void start() {
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         driver.get(RMSYS_URL);
@@ -51,7 +51,6 @@ public class LoginTest {
         WebElement signOut = driver.findElement(By.cssSelector(".sign-out"));
         new WebDriverWait(driver, 3).until(ExpectedConditions.visibilityOf(signOut));
         Assert.assertTrue(signOut.isDisplayed(), "SignOut is not displayed!");
-        signOut.click();
     }
 
     @Test
@@ -63,7 +62,12 @@ public class LoginTest {
         Assert.assertTrue(searchInput.isDisplayed(), "Search for Office input is not displayed!");
     }
 
-    @AfterTest
+    @AfterMethod
+    public void closetest() {
+        driver.findElement(By.cssSelector(".sign-out")).click();
+    }
+
+    @AfterClass
     public void end() {
         driver.quit();
     }

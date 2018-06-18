@@ -11,19 +11,17 @@ import java.util.concurrent.TimeUnit;
 
 public class IframeTest {
     private WebDriver driver = new ChromeDriver();
-    private static final String URL = "https://the-internet.herokuapp.com/";
+    private static final String URLFRAME = "https://the-internet.herokuapp.com/iframe";
     private static final String TEXTFORFRAME = "Hello world!";
 
     @BeforeClass
     public void start() {
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
-        driver.get(URL);
+        driver.get(URLFRAME);
     }
 
     @Test
     public void iFrameTest() {
-        driver.findElement(By.cssSelector(" a[href*='/frames']")).click();
-        driver.findElement(By.cssSelector("a[href*='/iframe']")).click();
         WebElement frame = driver.findElement(By.tagName("iframe"));
         driver.switchTo().frame(frame);
         driver.findElement(By.tagName("body")).clear();

@@ -7,7 +7,7 @@ import org.testng.annotations.*;
 
 import java.util.concurrent.TimeUnit;
 
-public class AlertAndFrameTest {
+public class AlertTest {
     private WebDriver driver = new ChromeDriver();
     private static final String URLALERT = "https://the-internet.herokuapp.com/javascript_alerts";
 
