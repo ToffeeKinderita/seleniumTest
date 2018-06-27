@@ -14,6 +14,7 @@ public class LoginTest {
     private static final String USERNAME = "EugenBorisik";
     private static final String PASSWORD = "qwerty12345";
     private static final String RMSYS_URL = "https://192.168.100.26/";
+    private static final String LOGGED_USERNAME_TEXT = "Borisik, Eugen";
     private WebDriver driver = new ChromeDriver();
 
     public void login(String usernme, String pass) {
@@ -41,8 +42,9 @@ public class LoginTest {
     @Test
     public void loginTest() throws InterruptedException {
         login(USERNAME, PASSWORD);
+        String findGetUserName = driver.findElement(By.cssSelector("#info div")).getText();
         Thread.sleep(500);  //Explicit wait
-        Assert.assertEquals("Borisik, Eugen", driver.findElement(By.cssSelector("#info div")).getText());
+        Assert.assertEquals(LOGGED_USERNAME_TEXT, findGetUserName);
     }
 
     @Test(dataProvider = "testData")

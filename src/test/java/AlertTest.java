@@ -10,6 +10,9 @@ import java.util.concurrent.TimeUnit;
 public class AlertTest {
     private WebDriver driver = new ChromeDriver();
     private static final String URLALERT = "https://the-internet.herokuapp.com/javascript_alerts";
+    private static final String ALERT_TEXT = "I am a JS Alert";
+    private static final String PROMRT_TEXT = "Hello Tamara!";
+    private static final String CONFERM_TEXT = "You clicked: Cancel";
 
     @BeforeClass
     public void start() {
@@ -23,7 +26,7 @@ public class AlertTest {
         Alert alert = driver.switchTo().alert();
         String text = alert.getText();
         alert.accept();
-        Assert.assertEquals("I am a JS Alert", text);
+        Assert.assertEquals(ALERT_TEXT, text);
     }
 
     @Test
@@ -32,17 +35,17 @@ public class AlertTest {
         Alert alert = driver.switchTo().alert();
         alert.dismiss();
         String text = driver.findElement(By.id("result")).getText();
-        Assert.assertEquals("You clicked: Cancel", text);
+        Assert.assertEquals(CONFERM_TEXT, text);
     }
 
     @Test
     public void jsPromptTest() {
         driver.findElement(By.cssSelector("button[onclick*='jsPrompt']")).click();
         Alert alert = driver.switchTo().alert();
-        alert.sendKeys("Hello Tamara!");
+        alert.sendKeys(PROMRT_TEXT);
         alert.accept();
         String text = driver.findElement(By.id("result")).getText();
-        Assert.assertEquals("You entered: Hello Tamara!", text);
+        Assert.assertEquals("You entered: " + PROMRT_TEXT, text);
     }
 
     @AfterClass
