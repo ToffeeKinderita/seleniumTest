@@ -1,20 +1,23 @@
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.ITestResult;
 import org.testng.annotations.*;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class LoginTest {
     private static final String USERNAME = "EugenBorisik";
     private static final String PASSWORD = "qwerty12345";
     private static final String RMSYS_URL = "https://192.168.100.26/";
-    private static final String LOGGED_USERNAME_TEXT = "Borisik, Eugen";
+    private static final String LOGGED_USERNAME_TEXT = "Borisik, Eugen1234"; //Changed to make the test fail (for capturing screenshot)
     private WebDriver driver = new ChromeDriver();
 
     public void login(String usernme, String pass) {
@@ -65,7 +68,17 @@ public class LoginTest {
     }
 
     @AfterMethod
-    public void closetest() {
+    public void closetest(ITestResult result) {
+        if (ITestResult.FAILURE == result.getStatus()) {
+            try {
+                TakesScreenshot ts = (TakesScreenshot) driver;
+                File source = ts.getScreenshotAs(OutputType.FILE);
+                FileUtils.copyFile(source, new File("D:\\Automation\\Selenium\\screenshots\\" + result.getName() + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + ".png"));
+                System.out.println("Screenshot taken");
+            } catch (Exception e) {
+                System.out.println("Exception while taking screenshot " + e.getMessage());
+            }
+        }
         driver.findElement(By.cssSelector(".sign-out")).click();
     }
 
